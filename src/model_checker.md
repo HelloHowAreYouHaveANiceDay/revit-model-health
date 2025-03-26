@@ -1,8 +1,6 @@
 ---
 title: Revit Model Checker
 toc: false
-sql:
-    source_table: ./data/usaec_model_checker.csv
 ---
 
 ```js
