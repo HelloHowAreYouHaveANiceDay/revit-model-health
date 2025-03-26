@@ -1,29 +1,45 @@
-name: Publish to GitHub Pages
-
+name: Publish
 on:
+  workflow_dispatch:
   push:
-    branches:
-      - main  # Or your main branch
-
+    branches: ["main"]
+permissions:
+  contents: write
 jobs:
-  publish:
+  build:
+    concurrency: ci-${{ github.ref }} # Recommended if you intend to make multiple deployments in quick succession.
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+      - name: Setup node
+        uses: actions/setup-node@v4
         with:
-          node-version: 16  # Or your desired Node.js version
+          node-version: 20
+          cache: "npm"
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
-      - name: Build the site
+      - name: Build
         run: npm run build
 
-      - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v1
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          path: dist  # Or the directory containing your built site
+          path: ./dist
+
+  deploy:
+    needs: build
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
