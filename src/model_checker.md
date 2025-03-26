@@ -3,9 +3,21 @@ title: Revit Model Checker
 toc: false
 ---
 
+# Revit Model Checker Demo
+
+
+
+## Use Your Model
 ```js
 const file = view(Inputs.file());
 ```
+
+Export a .csv from your model using [revit-csv](https://github.com/franpossetto/revit-csv), then attach above.
+
+### ---
+### ${!file ? 'Showing Sample File': 'Showing User File'}
+### ---
+
 
 ```js
 var csv_file
@@ -28,15 +40,20 @@ const project_in = _.find(csv_file, (r) => r['Category'] == 'Project Information
 ```
 
 <div>
-    <ul>
-        <li><strong>Project Issue Date:</strong> ${project_in['Project Issue Date'] ? new Date(project_in['Project Issue Date']).toISOString().split('T')[0] : ''}</li>
-        <li><strong>Organization Name:</strong> ${project_in['Organization Name']}</li>
-        <li><strong>Organization Description:</strong> ${project_in['Organization Description']}</li>
-        <li><strong>Author:</strong> ${project_in['Author']}</li>
-        <li><strong>Client Name:</strong> ${project_in['Client Name']}</li>
-        <li><strong>Project Address:</strong> ${project_in['Project Address']}</li>
-<li><strong>Project Name:</strong> ${project_in['Project Name']}</li>
-<li><strong>Project Number:</strong> ${project_in['Project Number']}</li>
+    <div>
+    </div>
+    <div>
+        <ul>
+            <li><strong>Project Issue Date:</strong> ${project_in['Project Issue Date'] ? new Date(project_in['Project Issue Date']).toISOString().split('T')[0] : ''}</li>
+            <li><strong>Organization Name:</strong> ${project_in['Organization Name']}</li>
+            <li><strong>Organization Description:</strong> ${project_in['Organization Description']}</li>
+            <li><strong>Author:</strong> ${project_in['Author']}</li>
+            <li><strong>Client Name:</strong> ${project_in['Client Name']}</li>
+            <li><strong>Project Address:</strong> ${project_in['Project Address']}</li>
+            <li><strong>Project Name:</strong> ${project_in['Project Name']}</li>
+            <li><strong>Project Number:</strong> ${project_in['Project Number']}</li>
+        </ul>
+    </div>
 </div>
 
 
@@ -70,6 +87,32 @@ Inputs.table(roomsByLevel, {
     }
 })
 ```
+
+
+## Health
+
+```js
+// Count model groups
+const model_groups_count = _.filter(csv_file, (r) => r['Category'] === 'Model Groups').length;
+
+// Count warnings
+const views_count = _.filter(csv_file, (r) => r['Category'] === 'Views').length;
+
+// Count elements with empty or null family
+const viewport_count = _.filter(csv_file, (r) => r['Category'] === 'Viewports').length;
+
+// Count elements with empty or null type
+const sheet_count = _.filter(csv_file, (r) => r['Category'] === 'Sheets').length;
+```
+
+
+<div class="grid grid-cols-4">
+  <div class="card"><h1>${model_groups_count}</h1>Model Groups</div>
+  <div class="card"><h1>${views_count}</h1>Views</div>
+  <div class="card"><h1>${viewport_count}</h1>Viewports</div>
+  <div class="card"><h1>${sheet_count}</h1>Sheets</div>
+</div>
+
 
 ## Furniture Count
 
